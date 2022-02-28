@@ -8,7 +8,7 @@ export const createCampaign = (req:Request,res:Response) =>
     campaign.save()
     .then((data) =>
     {
-        res.status(200).send(campaign);
+        res.status(201).send(campaign);
     })
     .catch((e) =>
     {
@@ -27,4 +27,4 @@ export const getAllCampaigns = (req:Request,res:Response) =>
     {
         res.status(500).send();
     })
-}
+};

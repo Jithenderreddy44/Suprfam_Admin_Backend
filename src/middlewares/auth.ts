@@ -22,10 +22,10 @@ const auth = async function (req:Request,res:Response,next:NextFunction)
         {
         try{
          res.locals.jwt = decoded;
-         console.log(res.locals.jwt);
-         console.log(res.locals.jwt._id);
+         console.log(res.locals.jwt.userId);
 
-         const userDoc = await AdminUser.findById({_id:res.locals.jwt._id, 'tokens.token':token});
+         //const userDoc = await AdminUser.findById({_id:res.locals.jwt.userId, 'tokens.token':token});
+         const userDoc = await AdminUser.findOne({_id:res.locals.jwt.userId});
          console.log(userDoc);
          if(!userDoc)
          {

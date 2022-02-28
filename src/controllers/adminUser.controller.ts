@@ -52,10 +52,10 @@ export const adminUserLogin = async (req:Request,res:Response) =>
 export const adminUserLogout = async (req:Request,res:Response) =>
 {
     try{
-        res.locals.user.tokens = res.locals.user.tokens.filter((token:any) =>
-        {
-            return token.token !== res.locals.token
-        });
+        // res.locals.user.tokens = res.locals.user.tokens.filter((token:any) =>
+        // {
+        //     return token.token !== res.locals.token
+        // });
         await res.locals.user.save();
         res.status(200).send()
     }
