@@ -1,5 +1,5 @@
 import express from 'express';
-import {createCampaign,getAllCampaigns} from '../controllers/campaign.controller';
+import {createCampaign,getAllCampaigns,updateCampaign} from '../controllers/campaign.controller';
 
 
 const router = express.Router();
@@ -9,8 +9,10 @@ const router = express.Router();
 router.post('/campaigns',createCampaign);
 
 // get all campaigns
-
 router.get('/campaigns',getAllCampaigns);
+
+// updating the campaigns
+router.patch('/campaigns/:id',updateCampaign)
 
 
 export default router;

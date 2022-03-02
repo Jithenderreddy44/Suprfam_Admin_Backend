@@ -1,6 +1,7 @@
 import {Request,Response} from 'express';
 import Campaign from '../models/campaign.model';
 
+//create campaign
 export const createCampaign = (req:Request,res:Response) =>
 {
     const campaign = new Campaign(req.body);
@@ -16,15 +17,60 @@ export const createCampaign = (req:Request,res:Response) =>
     })
 };
 
-export const getAllCampaigns = (req:Request,res:Response) =>
+export const getAllCampaigns = async (req:Request,res:Response) =>
 {
-    Campaign.find({})
+    //query parameters
+    const limit = !!req.query.limit ?  Number (req.query.limit) : 50000;
+    const skip = !!req.query.skip ? Number(req.query.skip) : 0;
+    const dateFilter = (req.query.start_date && req.query.end_date) ?
+    [{ $match:{start_date:{$gte:new Date(String(req.query.start_date))},end_date:{$lte:new Date(String(req.query.end_date))}} }]
+    : 
+    [{$match:{}}];
+
+    const pagination = [
+        {$skip:skip},
+        {$limit:limit}
+    ];
+
+    Campaign.aggregate([...dateFilter,...pagination])
     .then((campaigns) =>
     {
-        res.status(200).send(campaigns);
+    res.status(200).send(campaigns);
     })
     .catch((e) =>
     {
-        res.status(500).send();
+    res.status(500).send();
     })
+};
+
+//updating campaign
+export const updateCampaign = async (req:Request,res:Response) =>
+{
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name','campaign_types','campaign_deliverables','campaign_description','cover_image','start_date','end_date','influencer_details','min_influencers','order_delivery_screenshot','order_delivery_description','review_rating_screenshot','review_rating_description','sample_order_screenshot','sample_order_description','target_location','terms_and_conditions','sample_kyc_details','sample_signup_details','sample_purchase_order_details','sample_review_rating_details','sample_account_opening_details','sample_static_carousal_post_details','sample_static_post_details','sample_reel_post_details','sample_video_post_details','sample_story_details','sample_static_carousal_post_insights','sample_static_post_insights','sample_reel_post_insights','sample_video_post_insights','sample_story_insights'];
+    const isValidOperation = updates.every(element => allowedUpdates.includes(element));
+    if(!isValidOperation)
+    {
+        return res.status(400).send({
+            error:"Invalid Updates!"
+        })
+    };
+
+    try{
+       const campaign = await Campaign.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true});
+       if(!campaign)
+       {
+          return res.status(404).send({
+               error:"campaign not found"
+           })
+       }
+       res.status(200).send(campaign);
+    }
+    catch(e:any)
+    {
+        res.status(400).send({
+            error:e.message
+        })
+    }
+   
 };

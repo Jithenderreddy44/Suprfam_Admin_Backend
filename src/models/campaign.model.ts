@@ -265,7 +265,8 @@ const sampleAppStore = new Schema<SampleAppStore>({
     },
     name:{
         type:String,
-        trim:true
+        trim:true,
+        unique:true
     },
     order_delivery_screenshot:{
         type:String,
