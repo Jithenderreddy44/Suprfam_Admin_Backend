@@ -1,23 +1,51 @@
-import {Schema,model,Document,Types} from 'mongoose';
-import * as jwt from 'jsonwebtoken';
+import {Schema,model,Document} from 'mongoose';
 
-//create interface
-
-export interface Itokens extends Document {
-    token:string
+// interfaces 
+interface IBankDetails
+{
+  bank_name:string;
+  account_holder_name:string;
+  ifsc_code:string;
+  account_number:number;
 }
 
-export interface IUser extends Document {
+ interface IUser extends Document {
+    type:string;
     email: string;
     otp:string;
-    tokens:Types.DocumentArray<Itokens>
+    fullName:string;
+    whatsapp_number:number;
+    city:string;
+    bank_account_details:IBankDetails
+    upi_id:string;
   };
 
-  interface IUserDocument extends IUser, Document {
-    generateAuthToken():Promise<string>
-}
+  //schemas
+  const bankDetailsSchema = new Schema<IBankDetails>({
+    bank_name: {
+        type: String,
+        trim:true
+    },
+    account_holder_name: {
+        type: String,
+        trim:true
+    },
+    ifsc_code: {
+        type: String,
+        trim:true
+    },
+    account_number: {
+        type: Number,
+        trim:true
+    }
+},{_id:false});
 
-  const userSchema = new Schema<IUserDocument>({
+
+  const userSchema = new Schema<IUser>({
+    type:{
+      type:String,
+      default:'user'
+    },
     email: {
         type: String,
         required:true,
@@ -27,24 +55,36 @@ export interface IUser extends Document {
         type:String,
         required:true
     },
-    tokens:[{
-        token:{
-            type:String,
-            required:true
-        }
-    }]
+    fullName:{
+      type: String,
+      trim:true
+  },
+  whatsapp_number:{
+      type: Number,
+      trim:true
+  },
+  city: {
+      type: String,
+      trim:true
+  },
+  bank_account_details:{
+      type:bankDetailsSchema
+  },
+  upi_id: {
+      type: String
+  }
   });
 
-  userSchema.methods.generateAuthToken = async function ():Promise<string>
-  {
-    const user = this as IUserDocument;
+  // userSchema.methods.generateAuthToken = async function ():Promise<string>
+  // {
+  //   const user = this as IUserDocument;
 
-    const token = jwt.sign({ _id:user._id.toString() },'thisismysecret');
-    // user.tokens = user.tokens.concat({token})
-    user.tokens.push({token});
-    await user.save();
-    return token;
-  };
+  //   const token = jwt.sign({ _id:user._id.toString() },'thisismysecret');
+  //   // user.tokens = user.tokens.concat({token})
+  //   user.tokens.push({token});
+  //   await user.save();
+  //   return token;
+  // };
 
-const User = model<IUserDocument>('User',userSchema);
+const User = model<IUser>('User',userSchema);
 export default User;

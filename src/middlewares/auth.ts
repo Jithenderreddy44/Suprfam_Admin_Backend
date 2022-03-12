@@ -10,7 +10,7 @@ const auth = async function (req:Request,res:Response,next:NextFunction)
     //console.log(token);
     if(token)
     {
-    jwt.verify(token,'thisismysecret',async (error,decoded) =>
+    jwt.verify(token,process.env?.JWT_SECRET!,async (error,decoded) =>
     {
         if(error)
         {
@@ -26,7 +26,6 @@ const auth = async function (req:Request,res:Response,next:NextFunction)
 
          //const userDoc = await AdminUser.findById({_id:res.locals.jwt.userId, 'tokens.token':token});
          const userDoc = await AdminUser.findOne({_id:res.locals.jwt.userId});
-         console.log(userDoc);
          if(!userDoc)
          {
              throw new Error();

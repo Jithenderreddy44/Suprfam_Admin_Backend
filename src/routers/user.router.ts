@@ -1,17 +1,22 @@
 import express from 'express';
-import {createUser,getUser} from '../controllers/user.controller';
-import auth from '../middlewares/auth';
+import { createUser,verifyUser,userUpdate,generateLink,randomController} from '../controllers/user.controller';
 
 const router = express.Router();
 
-// campaign creation route
+// user creation route
 router.post('/users',createUser);
 
-// // get all campaigns
+// verify user route
 
-router.get('/users/me',auth,getUser)
+router.post('/users/verify',verifyUser)
 
-// router.get('/campaigns',getAllCampaigns);
+// update user
+router.patch('/users/:id',userUpdate);
+
+// generate link for superlancer
+router.post('/users/generate-link',generateLink);
+
+router.get('/users/template',randomController);
 
 
 export default router;

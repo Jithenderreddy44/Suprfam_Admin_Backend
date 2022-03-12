@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-mongoose.connect(`mongodb://127.0.0.1:27017/SuprFam`)
+mongoose.connect(process.env?.MONGOOSE_CONNECTION_URL!)
 .then(() =>
 {
     console.log('database is connected!');

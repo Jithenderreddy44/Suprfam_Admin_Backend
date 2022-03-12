@@ -51,7 +51,7 @@ const adminUserSchema = new Schema<IAdminUserDocument,UserModel>({
   {
     const user = this as IAdminUserDocument;
 
-    const token = jwt.sign({ userId:user._id.toString() },'thisismysecret');
+    const token = jwt.sign({ userId:user._id.toString() },process.env.JWT_SECRET!);
     // user.tokens = user.tokens.concat({token})
     await user.save();
     return token;

@@ -1,62 +1,80 @@
-import {Schema,model,Document} from 'mongoose';
+import {Schema,model,Types} from 'mongoose';
 
 //create interface
-export interface bankDetails extends Document{
+interface InviteSend{
+   campaign_id:any;
+    status:boolean
+};
+
+interface bankDetails {
     bank_name:string;
     account_holder_name:string;
     ifsc_code:string;
-    account_number:string;
+    account_number:number;
 };
 
-export interface Freelancer extends Document {
-    fullname: string;
+interface freelancer {
+    fullName: string;
     email: string;
-    alternate_number?: string;
-    whatsapp_number: string;
+    alternate_number?: number;
+    whatsapp_number: number;
     city: string;
     whatsapp_number_link?: string;
     bank_account_details:bankDetails,
-    upi_id:string
+    upi_id:string,
+    invite_send:InviteSend []
   };
 
-//   interface Bank {
-//     bank_name:string,
-//     account_holder_name:string,
-//     ifsc_code:string,
-//     account_number:string
-//   }
+const inviteStatusSchema = new Schema<InviteSend>({
+    campaign_id:{
+        type:Types.ObjectId
+    },
+    status:{
+        type:Boolean,
+        default:false
+    }
+},{_id:false});
 
-// const bankDetails = new Schema({
-//     bank_name: {
-//         type: String
-//     },
-//     account_holder_name: {
-//         type: String
-//     },
-//     ifsc_code: {
-//         type: String
-//     },
-//     account_number: {
-//         type: String
-//     }
-// }, {
-//     timestamps: true
-// });
+const bankDetailsSchema = new Schema<bankDetails>({
+    bank_name: {
+        type: String,
+        required:true,
+        trim:true
+    },
+    account_holder_name: {
+        type: String,
+        required:true,
+        trim:true
+    },
+    ifsc_code: {
+        type: String,
+        required:true,
+        trim:true
+    },
+    account_number: {
+        type: Number,
+        required:true,
+        trim:true
+    }
+},{_id:false});
 
-  const freelancerSchema = new Schema({
-    fullname: {
+  const freelancerSchema = new Schema<freelancer>({
+    fullName:{
         type: String,
-        required: true
+        required: true,
+        trim:true
     },
-    email: {
+    email:{
         type: String,
-        required:true
+        unique:true,
+        required:true,
+        trim:true
     },
-    alternate_number: {
-        type: String
+    alternate_number:{
+        type: Number
     },
-    whatsapp_number: {
-        type: String,
+    whatsapp_number:{
+        type: Number,
         required:true
     },
     city: {
@@ -66,27 +84,19 @@ export interface Freelancer extends Document {
     whatsapp_number_link: {
         type: String
     },
-    bank_account_details: {
-            bank_name: {
-                type: String
-            },
-            account_holder_name: {
-                type: String
-            },
-            ifsc_code: {
-                type: String
-            },
-            account_number: {
-                type: String
-            }
+    bank_account_details:{
+        type:bankDetailsSchema
     },
     upi_id: {
         type: String,
         required:true
     },
+    invite_send:{
+        type:[inviteStatusSchema]
+    }
   },{
       timestamps:true
   });
 
-const Freelancer = model<Freelancer>('Freelancer',freelancerSchema);
-export default Freelancer;
+const freelancerModel = model<freelancer>('Freelancer',freelancerSchema);
+export default freelancerModel;

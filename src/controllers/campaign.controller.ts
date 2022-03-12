@@ -19,28 +19,36 @@ export const createCampaign = (req:Request,res:Response) =>
 
 export const getAllCampaigns = async (req:Request,res:Response) =>
 {
+    try{
     //query parameters
     const limit = !!req.query.limit ?  Number (req.query.limit) : 50000;
     const skip = !!req.query.skip ? Number(req.query.skip) : 0;
-    const dateFilter = (req.query.start_date && req.query.end_date) ?
-    [{ $match:{start_date:{$gte:new Date(String(req.query.start_date))},end_date:{$lte:new Date(String(req.query.end_date))}} }]
-    : 
-    [{$match:{}}];
+    const campName = req.query.name;
+
+    // const dateFilter = (req.query.start_date && req.query.end_date) ?
+    // [{ $match:{start_date:{$gte:new Date(String(req.query.start_date))},end_date:{$lte:new Date(String(req.query.end_date))}} }]
+    // : 
+    // [{$match:{}}];
+    
+    //filters
+    const nameFilter = !!campName ? [{
+        $match: {
+            name:{$regex:`${campName}`,$options:'i'}
+        }
+    }]:[{$match:{}}];
 
     const pagination = [
         {$skip:skip},
         {$limit:limit}
     ];
 
-    Campaign.aggregate([...dateFilter,...pagination])
-    .then((campaigns) =>
-    {
+    const campaigns = await Campaign.aggregate([...nameFilter,...pagination]);
     res.status(200).send(campaigns);
-    })
-    .catch((e) =>
+    }
+    catch(e)
     {
-    res.status(500).send();
-    })
+        res.status(500).send(e);
+    }
 };
 
 //updating campaign
