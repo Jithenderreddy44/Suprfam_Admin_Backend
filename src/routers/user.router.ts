@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser,verifyUser,userUpdate,generateLink,randomController} from '../controllers/user.controller';
+import { createUser,verifyUser,userUpdate,generateLink} from '../controllers/user.controller';
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.patch('/users/:id',userUpdate);
 // generate link for superlancer
 router.post('/users/generate-link',generateLink);
 
-router.get('/users/template',randomController);
+// router.get('/users/template',randomController);
 
 
 export default router;

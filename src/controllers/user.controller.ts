@@ -103,10 +103,10 @@ export const generateLink = async (req:Request,res:Response):Promise<void> =>
     }
 };
 
-export const randomController = async (req:Request,res:Response) =>
-{
-    res.render('otp_verification',{title:'jithender reddy'});
-};
+// export const randomController = async (req:Request,res:Response) =>
+// {
+//     res.render('otp_verification',{otp:'123456'});
+// };
 
 
 

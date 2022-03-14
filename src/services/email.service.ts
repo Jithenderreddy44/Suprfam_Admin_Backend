@@ -1,6 +1,6 @@
 import sgMail from '@sendgrid/mail';
 
-const sendgridApiKey = process.env?.SENDGRID_API_KEY!;
+const sendgridApiKey = process.env?.SENDGRID_API_KEY_2!;
 
 sgMail.setApiKey(sendgridApiKey);
 
@@ -24,7 +24,7 @@ export const sendEmail = ({email,subject,html}:emailObj) =>
     })
     .catch((e) =>
     {
-        console.log(e);
+        console.log("error",e.message);
     })
 };
 

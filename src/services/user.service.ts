@@ -39,12 +39,11 @@ export const sendEmailToUser = async (userDetails:UserDetails) =>
     });
     
    html = ejs.render(html,{
-        email:userDetails.email,
         otp:userDetails.otp
     });
     sendEmail({
         email:userDetails.email,
         subject:'Thanks for joining in ...',
-        html
+        html:html
     })
 };

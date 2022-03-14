@@ -1,12 +1,24 @@
-import {Request,Response} from 'express';
+import {NextFunction, Request,Response} from 'express';
 
 export const uploadFile = async (req:Request,res:Response) =>
 {
+    try
+    {
     if(req.file)
     {
-    console.log(req.file);
-    res.status(200).send(req.file);
+    //console.log(req.file);
+    return res.status(200).send(req.file);
     }
+    
+    throw new Error("please provide file!")
+    }
+    catch(e:any)
+    {
+        res.status(400).send({
+            error:e.message
+        })
+    }
+    
     
     // if(req.file)
     // {
@@ -26,4 +38,11 @@ export const uploadFile = async (req:Request,res:Response) =>
     //     })
     // }
 
+};
+
+export const errorHandlingFunc = async (error:Error,req:Request,res:Response,next:NextFunction) =>
+{
+    res.status(400).send({
+        error:error.message
+    });
 };

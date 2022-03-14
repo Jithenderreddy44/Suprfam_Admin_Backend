@@ -10,8 +10,7 @@ mongoose.connect(process.env?.MONGOOSE_CONNECTION_URL!)
     console.log('database error!');
 })
 
-// const db = mongoose.connection;
-
+// const db = mongoose.connection
 // db
 // .once('open',() =>
 // {

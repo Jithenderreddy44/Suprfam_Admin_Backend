@@ -1,5 +1,5 @@
 import express from 'express';
-import {uploadFile} from '../controllers/uploadFile.controller';
+import {uploadFile,errorHandlingFunc} from '../controllers/uploadFile.controller';
 import aws from 'aws-sdk';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
@@ -61,6 +61,6 @@ const upload = multer({
 //     dest:'uploads'
 // });
 
-router.post("/images",upload.single('image'),uploadFile);
+router.post("/images",upload.single('image'),uploadFile,errorHandlingFunc);
 
 export default router;
