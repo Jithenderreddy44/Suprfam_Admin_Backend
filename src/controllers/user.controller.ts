@@ -1,8 +1,12 @@
 import {Request,Response} from 'express';
 import User from '../models/user.model';
+import AppliedCampaign from '../models/appledCampaign.model';
 import {generateOtp} from '../utils/otp';
 import bcrypt from 'bcryptjs';
-import {generateCampaignLink, sendEmailToUser} from '../services/user.service';
+import {sendEmailToUser} from '../services/user.service';
+import {generateCampaignLink} from '../services/campaign.service';
+import mongoose from 'mongoose';
+import Campaign from '../models/campaign.model';
 
 // user creation route
 export const createUser = async (req:Request,res:Response) =>
@@ -31,8 +35,7 @@ export const createUser = async (req:Request,res:Response) =>
         res.status(500).send({
             errorMessage:e.message
         })
-    }
-    
+    }   
 };
 
 // user verification route
@@ -86,14 +89,14 @@ export const userUpdate = async (req:Request,res:Response) =>
     }
 };
 
-// generate link
-export const generateLink = async (req:Request,res:Response):Promise<void> =>
+export const applyForCampaigns = async (req:Request,res:Response) =>
 {
     try
     {
         const {campaign_id,freelancer_id} = req.body;
+        await new AppliedCampaign(req.body).save();
         const generatedLink = await generateCampaignLink(campaign_id,freelancer_id);
-        res.send(generatedLink);
+        res.status(201).send(generatedLink);
     }
     catch(e:any)
     {
@@ -101,6 +104,34 @@ export const generateLink = async (req:Request,res:Response):Promise<void> =>
             errorMessage:e.message
         })
     }
+};
+
+export const getFreelancerCampaigns = async (req:Request,res:Response) =>
+{
+    try
+    {
+    const campaigns = await AppliedCampaign.aggregate([
+        {
+            $match:{
+                freelancer_id:new mongoose.Types.ObjectId(req.params.id)
+            }
+        }
+    ]);
+
+    const campaignIds = campaigns.map((item) =>
+    {
+        return item.campaign_id
+    });
+    console.log(campaignIds);
+
+    const campaign = await Campaign.find({_id:{$in:campaignIds}})
+    res.status(200).send(campaign);
+    }
+    catch(e:any)
+    {
+        res.status(400).send(e.message);
+    }
+    
 };
 
 // export const randomController = async (req:Request,res:Response) =>

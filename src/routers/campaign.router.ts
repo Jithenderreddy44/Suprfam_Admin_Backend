@@ -1,5 +1,5 @@
 import express from 'express';
-import {createCampaign,getAllCampaigns,updateCampaign} from '../controllers/campaign.controller';
+import {createCampaign,getAllCampaigns,updateCampaign,deleteCampaign} from '../controllers/campaign.controller';
 
 
 const router = express.Router();
@@ -12,8 +12,13 @@ router.post('/campaigns',createCampaign);
 router.get('/campaigns',getAllCampaigns);
 
 // updating the campaigns
-router.patch('/campaigns/:id',updateCampaign)
+router.patch('/campaigns/:id',updateCampaign);
 
+// deleting an individual campaign
+router.delete('/campaigns/:id',deleteCampaign);
+
+// // generate campaign link for superlancer
+// router.post('/campaigns/generate-link',generateLink);
 
 export default router;
 

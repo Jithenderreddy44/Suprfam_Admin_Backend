@@ -1,7 +1,8 @@
-import {Schema,model,Types} from 'mongoose';
+import {Schema,model} from 'mongoose';
 
 //create interface
-interface CampaignTypes{
+interface CampaignTypes
+{
     label:string;
     value:string;
     type:string;
@@ -56,6 +57,7 @@ interface SampleAppStore{
 }
 
  interface Campaign {
+    isDeleted:boolean;
     cover_image:string;
     campaign_types:CampaignTypes [];
     campaign_description:string;
@@ -236,6 +238,10 @@ const sampleAppStore = new Schema<SampleAppStore>({
 
 //campaign schema
   const CampSchema = new Schema<Campaign>({
+      isDeleted:{
+          type:Boolean,
+          default:false
+      },
     campaign_types:{
         type:[campaignTypesSchema],
         default:[]

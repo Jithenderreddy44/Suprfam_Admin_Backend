@@ -33,9 +33,12 @@ export const getAllCampaigns = async (req:Request,res:Response) =>
     //filters
     const nameFilter = !!campName ? [{
         $match: {
-            name:{$regex:`${campName}`,$options:'i'}
+            name:{$regex:`${campName}`,$options:'i'},
+            isDeleted:false
         }
-    }]:[{$match:{}}];
+    }]:[{$match:{
+        isDeleted:false
+    }}];
 
     const pagination = [
         {$skip:skip},
@@ -43,7 +46,11 @@ export const getAllCampaigns = async (req:Request,res:Response) =>
     ];
 
     const campaigns = await Campaign.aggregate([...nameFilter,...pagination]);
-    res.status(200).send(campaigns);
+    const campaignsCount = await Campaign.aggregate([{$match:{isDeleted:false}},{$count:'count'}]);
+    res.status(200).send({
+        campaigns,
+        campaignsCount:campaignsCount[0].count
+    });
     }
     catch(e)
     {
@@ -82,3 +89,36 @@ export const updateCampaign = async (req:Request,res:Response) =>
     }
    
 };
+
+// soft delete campaign endpoint
+export const deleteCampaign = async (req:Request,res:Response) =>
+{
+    try{
+        const updatedCampaign = await Campaign.findByIdAndUpdate(req.params.id,{isDeleted:true},{new:true,runValidators:true});
+        res.status(200).send("campaign successfully deleted!");
+    }
+    catch(e:any)
+    {
+        res.status(400).send({
+            errorMessage:e.message
+        })
+    }
+   
+};
+
+// // generate link
+// export const generateLink = async (req:Request,res:Response):Promise<void> =>
+// {
+//     try
+//     {
+//         const {campaign_id,freelancer_id} = req.body;
+//         const generatedLink = await generateCampaignLink(campaign_id,freelancer_id);
+//         res.send(generatedLink);
+//     }
+//     catch(e:any)
+//     {
+//         res.status(400).send({
+//             errorMessage:e.message
+//         })
+//     }
+// };

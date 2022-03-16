@@ -8,6 +8,8 @@ import userRouter from './routers/user.router';
 import adminUserRouter from './routers/adminUser.router';
 import influencerRouter from './routers/influencer.router';
 import fileUploadRouter from './routers/fileUpload.router';
+import communityRouter from './routers/community.router';
+import messageRouter from './routers/message.router';
 
 // paths
 const viewsPath = path.join(__dirname,'./templates');
@@ -20,10 +22,13 @@ app.use(express.json());
 app.use(cors());
 app.use(adminUserRouter);
 app.use(campaignRouter);
-app.use(freelancerRouter);
+// app.use(freelancerRouter);
 app.use(userRouter);
 app.use(influencerRouter);
 app.use(fileUploadRouter);
+app.use(communityRouter);
+app.use(messageRouter);
+
 
 // handlebars
 app.set('view engine','ejs');

@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser,verifyUser,userUpdate,generateLink} from '../controllers/user.controller';
+import { createUser,verifyUser,userUpdate,applyForCampaigns,getFreelancerCampaigns} from '../controllers/user.controller';
 
 const router = express.Router();
 
@@ -8,13 +8,17 @@ router.post('/users',createUser);
 
 // verify user route
 
-router.post('/users/verify',verifyUser)
+router.post('/users/verify',verifyUser);
 
 // update user
 router.patch('/users/:id',userUpdate);
 
-// generate link for superlancer
-router.post('/users/generate-link',generateLink);
+// apply campaign
+router.post('/users/apply-campaign',applyForCampaigns);
+
+// get all campaigns for specif freelancer
+router.get('/freelancers/:id',getFreelancerCampaigns);
+
 
 // router.get('/users/template',randomController);
 

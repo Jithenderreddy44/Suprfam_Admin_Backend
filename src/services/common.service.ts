@@ -24,6 +24,5 @@ export const createShortLink =  (link:string):Promise<any> =>
            reject(e);
         })
     })
-    
 };
 
