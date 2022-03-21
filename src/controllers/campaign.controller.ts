@@ -17,6 +17,23 @@ export const createCampaign = (req:Request,res:Response) =>
     })
 };
 
+// getting individual campaign by id
+export const getCampaignById = async (req:Request,res:Response) =>
+{
+    try
+    {
+        const campaign = await Campaign.findById(req.params.id);
+        res.status(200).send(campaign);
+    }
+    catch(e:any)
+    {
+        res.status(400).send({
+            errorMessage:e.message
+        });
+    }
+};
+
+// getting all the campaigns 
 export const getAllCampaigns = async (req:Request,res:Response) =>
 {
     try{
