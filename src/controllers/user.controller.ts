@@ -7,6 +7,8 @@ import {sendEmailToUser} from '../services/user.service';
 import {generateCampaignLink} from '../services/campaign.service';
 import mongoose from 'mongoose';
 import Campaign from '../models/campaign.model';
+import freelancerModel from '../models/freelancer.model';
+import AppliedCampaigns from '../models/appledCampaign.model';
 
 // user creation route
 export const createUser = async (req:Request,res:Response) =>
@@ -94,7 +96,28 @@ export const applyForCampaigns = async (req:Request,res:Response) =>
     try
     {
         const {campaign_id,freelancer_id} = req.body;
-        await new AppliedCampaign(req.body).save();
+        if(!campaign_id)
+        {
+            throw new Error("please provide campaign_id!");
+        }
+        else if(!freelancer_id)
+        {
+            throw new Error("please provide freelancer_id!");
+        };
+
+        const freelancerExists = await AppliedCampaign.findOne({freelancer_id:freelancer_id});
+        if(freelancerExists)
+        {
+           await AppliedCampaign.updateOne({freelancer_id:freelancer_id},{$push:{campaign_ids:campaign_id}})
+        }
+        else
+        {
+            await new AppliedCampaign({
+                campaign_ids:[campaign_id],
+                freelancer_id
+            }).save();
+        }
+        
         const generatedLink = await generateCampaignLink(campaign_id,freelancer_id);
         res.status(201).send(generatedLink);
     }
@@ -106,6 +129,7 @@ export const applyForCampaigns = async (req:Request,res:Response) =>
     }
 };
 
+// getting all applied campaigns for specific freelancer
 export const getFreelancerCampaigns = async (req:Request,res:Response) =>
 {
     try
@@ -118,13 +142,7 @@ export const getFreelancerCampaigns = async (req:Request,res:Response) =>
         }
     ]);
 
-    const campaignIds = campaigns.map((item) =>
-    {
-        return item.campaign_id
-    });
-    console.log(campaignIds);
-
-    const campaign = await Campaign.find({_id:{$in:campaignIds}})
+    const campaign = await Campaign.find({_id:{$in:campaigns[0].campaign_ids}})
     res.status(200).send(campaign);
     }
     catch(e:any)
@@ -132,6 +150,63 @@ export const getFreelancerCampaigns = async (req:Request,res:Response) =>
         res.status(400).send(e.message);
     }
     
+};
+
+// getting all the freelancers with applied campaigns
+
+export const getFreelancersWithAppliedCampaigns = async (req:Request,res:Response) =>
+{
+    try
+    {
+   const freelancersWithCampaigns = await AppliedCampaign.aggregate([
+       {$match:{}},
+       {
+        $lookup:{
+            from:"users",
+            localField:"freelancer_id",
+            foreignField:"_id",
+            as:"freelancer"
+        }
+    },
+       {
+           $lookup:{
+               from:"campaigns",
+               localField:"campaign_ids",
+               foreignField:"_id",
+               as:"campaigns"
+           }
+       },
+       {
+        $project:{
+            _id:0,
+            freelancer:{
+                $map:{
+                    "input":"$freelancer",
+                    as:"fre",
+                    in:{
+                        "name":"$$fre.fullName"
+                    }
+                }
+            },
+           campaigns:{
+               $map:{
+                   "input":"$campaigns",
+                   as:"camp",
+                   in:{
+                    "name":"$$camp.name"       
+                   }
+               }
+           }
+        }
+       }
+      
+    ]);
+    res.status(200).send(freelancersWithCampaigns);
+     }
+    catch(e:any)
+    {
+        res.status(500).send(e.message);
+    }
 };
 
 // export const randomController = async (req:Request,res:Response) =>
